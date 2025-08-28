@@ -1,16 +1,15 @@
 from asyncio import run
-import logging
 from aiogram import Bot, Dispatcher
 from config import BOT_TOKEN
-from handlers import router_start, router_admin
-logging.basicConfig(level=logging.INFO)
+from handlers import router_start, router_user
+
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 async def main():
     print('Ishga tushdi')
     dp.include_router(router_start)
-    dp.include_router(router_admin)
+    dp.include_router(router_user)
     await dp.start_polling(bot)
 
 if __name__=='__main__':
