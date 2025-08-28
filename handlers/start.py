@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart
 from model import User
 from config import ADMIN_ID
 from keyboards import (get_number, to_my_channel, clearButton, user_option, admin_option)
+from service import register_to_telegram
 
 router = Router()
 @router.message(CommandStart())
@@ -30,7 +31,7 @@ async def contact_handler(message:types.Message):
         else:
             await message.answer('Xush kelibsiz foydalanuvchi', reply_markup=user_option)
     print(user)
-
+    register_to_telegram(user)
     #dbga saqlanadi
 # @router.message(Command(commands='users'))
 # async def cmd_users(message:types.Message):
