@@ -1,23 +1,24 @@
-from aiogram import types, Router
+from aiogram import types, Router, F
 from aiogram.filters import CommandStart
-from model import User
+from model import (User, StartState)
+from aiogram.fsm.context import FSMContext
 from config import ADMIN_ID
 from keyboards import (get_number, to_my_channel, clearButton, user_option, admin_option)
 from service import register_to_telegram
 
 router = Router()
 @router.message(CommandStart())
-async def cmd_start(message:types.Message):
+async def cmd_start(message:types.Message, state:FSMContext):
     first_name = message.from_user.first_name or ""
     last_name = message.from_user.last_name or ""
     full_name = f"{first_name} {last_name}".strip()
-
     await message.answer(f'Assalomu aleykum {full_name} 👋', reply_markup=get_number)
     await message.answer('Xush kelibsiz !!!', reply_markup=to_my_channel)
+    await state.set_state(StartState.wait)
 
 
-@router.message(lambda message:message.contact)
-async def contact_handler(message:types.Message):
+@router.message(StartState.wait, F.contact)
+async def contact_handler(message:types.Message, state:FSMContext):
     contact = message.contact
     user_id = contact.user_id
     first_name = contact.first_name or ''
@@ -32,6 +33,7 @@ async def contact_handler(message:types.Message):
             await message.answer('Xush kelibsiz foydalanuvchi', reply_markup=user_option)
     print(user)
     register_to_telegram(user)
+    await state.clear()
     #dbga saqlanadi
 # @router.message(Command(commands='users'))
 # async def cmd_users(message:types.Message):

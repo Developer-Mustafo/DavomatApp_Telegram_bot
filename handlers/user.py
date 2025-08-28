@@ -39,13 +39,14 @@ async def wait_for_validate(message:types.Message, state:FSMContext):
     await state.update_data(wait_for_validate=message.text)
     try:
         data = await state.get_data()
-        for user_id in users_need_to_pay:
-            print(type(user_id))
-            print(user_id)
-            amount = int(data.get('wait_for_validate'))
-            print(amount)
-            pay_to_user(user_id, amount)
-            await message.bot.send_message(chat_id=user_id, text='Balansingizga pul o\'tkazildi 💳')
+        user_id = users_need_to_pay.pop(-1)
+        print(type(user_id))
+        print(user_id)
+        amount = int(data.get('wait_for_validate'))
+        print(amount)
+        pay_to_user(user_id, amount)
+        await message.bot.send_message(chat_id=user_id, text='Balansingizga pul o\'tkazildi 💳')
         await state.clear()
+        print(users_need_to_pay)
     except Exception:
         await message.answer('Xatolik yuz berdi')

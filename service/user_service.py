@@ -17,3 +17,6 @@ def get_by_phone_number(phone_number:str):
     :return:password through backend
     """
     return '1234567'
+
+def get_user(user_id:int):
+    return [User(user_id, first_name='', last_name='', phone_number='dsda')]
