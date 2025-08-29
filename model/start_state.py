@@ -1,4 +1,4 @@
 from aiogram.fsm.state import (State, StatesGroup)
 
-class StartState(StatesGroup):
+class start_state(StatesGroup):
     wait = State()

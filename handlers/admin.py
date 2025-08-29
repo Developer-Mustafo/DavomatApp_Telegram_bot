@@ -1,6 +1,6 @@
 from aiogram import types, F, Router
 from config import ADMIN_ID
-from service import get_user
+from service import get_user_list
 router = Router()
 
 @router.message(F.text=='Foydalanuvchilar 👥')
@@ -11,7 +11,7 @@ async def get_users(message:types.Message):
             await message.answer('Siz oddiy foydalanuvchisiz')
         else:
             continue
-    users = get_user(user_id)
+    users = get_user_list()
     await message.answer('Barcha foydalanuvchilar ro\'yhati: ')
     for user in users:
         result = (f'Ismi: <code>{user.first_name}</code>\n'

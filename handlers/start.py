@@ -1,6 +1,6 @@
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart
-from model import (User, StartState)
+from model import (User, start_state)
 from aiogram.fsm.context import FSMContext
 from config import ADMIN_ID
 from keyboards import (get_number, to_my_channel, clearButton, user_option, admin_option)
@@ -14,10 +14,10 @@ async def cmd_start(message:types.Message, state:FSMContext):
     full_name = f"{first_name} {last_name}".strip()
     await message.answer(f'Assalomu aleykum {full_name} 👋', reply_markup=get_number)
     await message.answer('Xush kelibsiz !!!', reply_markup=to_my_channel)
-    await state.set_state(StartState.wait)
+    await state.set_state(start_state.wait)
 
 
-@router.message(StartState.wait, F.contact)
+@router.message(start_state.wait, F.contact)
 async def contact_handler(message:types.Message, state:FSMContext):
     contact = message.contact
     user_id = contact.user_id
@@ -31,8 +31,15 @@ async def contact_handler(message:types.Message, state:FSMContext):
             await message.answer('Xush kelibsiz admin', reply_markup=admin_option)
         else:
             await message.answer('Xush kelibsiz foydalanuvchi', reply_markup=user_option)
+
     print(user)
-    register_to_telegram(user)
+    response = register_to_telegram(user)
+    try:
+        for admin_id in ADMIN_ID:
+            await message.bot.send_message(chat_id=admin_id,
+                                           text=f'Yangi foydalanuvchi: \nIsmi: {response.data.firstName}\nFamiliyasi: {response.data.lastName}\nTelefon raqami: {response.data.phoneNumber}')
+    except Exception as e:
+        print(e)
     await state.clear()
     #dbga saqlanadi
 # @router.message(Command(commands='users'))

@@ -26,7 +26,6 @@ admin_choice = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='✅ Tasdiqlash', callback_data='approved'),
      InlineKeyboardButton(text='❌ Rad etish', callback_data='disapproved')]
 ])
-
 #agar internetdan xabar chiqarmoqchi bo'lsang
 # users = [
 #     'Mustafo', '.', 'Zamira'
