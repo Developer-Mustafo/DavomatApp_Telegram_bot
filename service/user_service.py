@@ -32,9 +32,8 @@ def pay_to_user(user_id: int, amount: int):
     else:
         # Mavjud limitdan davom etish
         old_limit = api_response.data.limit
-        if old_limit is None:
+        if old_limit is None or old_limit<date.today():
             old_limit = date.today()
-
         total_months = amount / monthly_payment
         years = int(total_months // 12)
         remaining_months = total_months % 12

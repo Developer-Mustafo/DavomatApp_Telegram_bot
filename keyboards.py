@@ -11,7 +11,11 @@ get_number = ReplyKeyboardMarkup(keyboard=[
 ], one_time_keyboard=True, resize_keyboard=True)
 
 user_option = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='To\'lov qilish 💳'), KeyboardButton(text='Parolni olish 🔐')]
+    [KeyboardButton(text='To\'lov qilish 💳'), KeyboardButton(text='Parolni olish 🔐')],
+    [KeyboardButton(text='Admin bilan bo\'g\'lanish 👤')]
+], one_time_keyboard=True, resize_keyboard=True)
+stop_conversation = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text='Chatni to\'xtatish ❌')]
 ], one_time_keyboard=True, resize_keyboard=True)
 
 admin_option = ReplyKeyboardMarkup(keyboard=[
@@ -25,6 +29,10 @@ to_my_channel = InlineKeyboardMarkup(inline_keyboard=[
 admin_choice = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='✅ Tasdiqlash', callback_data='approved'),
      InlineKeyboardButton(text='❌ Rad etish', callback_data='disapproved')]
+])
+admin_choice_for_conversation = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='✅ Boshlash', callback_data='start'),
+     InlineKeyboardButton(text='❌ Bekor qilish', callback_data='cancel')]
 ])
 #agar internetdan xabar chiqarmoqchi bo'lsang
 # users = [

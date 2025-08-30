@@ -1,7 +1,7 @@
 from aiogram import (Router, types, F)
 from aiogram.fsm.context import (FSMContext)
 from config import (CARD_NUMBER, ADMIN_ID)
-from model import payment_state
+from model import (payment_state)
 from service import pay_to_user
 from keyboards import (admin_choice, user_option)
 
@@ -9,10 +9,15 @@ router = Router()
 users_data = list()
 @router.message(F.text=='To\'lov qilish 💳')
 async def pay_balance(message:types.Message, state:FSMContext):
-    await state.set_state(payment_state.wait)
-    await message.answer(text='💳 Marhamat to\'lovni amalga oshiring:\n'
-                                 f'<code>{CARD_NUMBER}</code>\n'
-                              'va to\'lov qilganingizdan keyin chekning rasmini shu yerga tashlang 👇', parse_mode='HTML')
+    for admin_id in ADMIN_ID:
+        if message.from_user.id == admin_id:
+            await message.answer(text='Siz adminsiz')
+        else:
+            await state.set_state(payment_state.wait)
+            await message.answer(text='💳 Marhamat to\'lovni amalga oshiring:\n'
+                                      f'<code>{CARD_NUMBER}</code>\n'
+                                      'va to\'lov qilganingizdan keyin chekning rasmini shu yerga tashlang 👇',
+                                 parse_mode='HTML')
 
 @router.message(payment_state.wait, F.photo)
 async def wait_for_image(message:types.Message):
@@ -54,6 +59,6 @@ async def wait_for_validate(message:types.Message, state:FSMContext):
         print(is_successful)
         print(users_data)
     except Exception as e:
-        await message.answer('Xatolik yuz berdi')
-        await message.bot.send_message(chat_id=user_id, text='Xatolik yuz berdi', reply_markup=user_option)
+        await message.answer('⚠️ Xatolik yuz berdi')
+        await message.bot.send_message(chat_id=user_id, text='⚠️ Xatolik yuz berdi', reply_markup=user_option)
         print(e)

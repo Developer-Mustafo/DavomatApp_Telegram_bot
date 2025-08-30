@@ -17,7 +17,7 @@ async def get_phone_number(message:types.Message, state:FSMContext):
     phone_number = contact.phone_number
     person = get_by_phone_number(phone_number)
     if person is None:
-        await message.answer('Bunday foydalanuvchi yo\'q')
+        await message.answer('Bunday foydalanuvchi yo\'q', reply_markup=user_option)
     else:
         password = person.password
         option = None

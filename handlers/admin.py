@@ -13,8 +13,11 @@ async def get_users(message:types.Message):
             continue
     users = get_user_list()
     await message.answer('Barcha foydalanuvchilar ro\'yhati: ')
-    for user in users:
-        result = (f'Ismi: <code>{user.first_name}</code>\n'
-                  f'Familiyasi: <code>{user.last_name}</code>\n'
-                  f'Telefoni: <code>{user.phone_number}</code>')
+    for data in users:
+        first_name = data.firstName
+        last_name = data.lastName
+        phone_number = data.phoneNumber
+        result = (f'Ismi: <code>{first_name}</code>\n'
+                  f'Familiyasi: <code>{last_name}</code>\n'
+                  f'Telefoni: <code>{phone_number}</code>')
         await message.answer(result, parse_mode='HTML')
