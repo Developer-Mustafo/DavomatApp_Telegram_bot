@@ -10,7 +10,7 @@ monthly_payment = 20_000
 
 def pay_to_user(user_id: int, amount: int):
     # Avval balans ma'lumotlarini olish
-    url_balance = f'{BASE_URL}/api/student/balance?telegramUserId={user_id}'
+    url_balance = f'{BASE_URL}/api/user/balance?telegramUserId={user_id}'
     response = requests.get(url_balance)
     response_json = response.json()
 
