@@ -1,14 +1,12 @@
 import datetime
-
-from aiogram import F, types, Router
-from aiogram.fsm.context import FSMContext
-from model import (Conversation, contact_admin_state)
-from config import ADMIN_ID
-from keyboards import (stop_conversation, admin_choice_for_conversation, admin_option, user_option)
+import io
 import json
 from dataclasses import asdict
-import io
-from aiogram.enums import ParseMode
+from aiogram import F, types, Router
+from aiogram.fsm.context import FSMContext
+from config import ADMIN_ID
+from keyboards import (stop_conversation, admin_choice_for_conversation, admin_option, user_option)
+from model import (Conversation, contact_admin_state)
 
 router = Router()
 chat_user = []
@@ -22,20 +20,24 @@ async def contact_admin(message:types.Message, state:FSMContext):
     for admin_id in ADMIN_ID:
         await message.bot.send_message(chat_id=admin_id, text=f'👤 Foydalanuvchi {message.from_user.id} chatni boshladi. Qabul qilasizmi ?',
                                        reply_markup=admin_choice_for_conversation)
-        chat_user.append(admin_id)
     await state.set_state(contact_admin_state.start)
 
 @router.callback_query(F.data=='start')
 async def start_conversation(callback:types.CallbackQuery, state:FSMContext):
     await callback.answer(text='Siz suxbatni boshladingiz ✅')
     await callback.message.answer('Siz suxbatni boshladingiz ✅', reply_markup=stop_conversation)
+    for admin_id in ADMIN_ID:
+        if admin_id not in chat_user:
+            chat_user.append(admin_id)
     await state.set_state(contact_admin_state.start)
 
 @router.callback_query(F.data=='cancel')
-async def cancel_conversation(callback:types.CallbackQuery, state:FSMContext):
+async def cancel_conversation(callback:types.CallbackQuery):
     await callback.answer(text='Siz suxbatni bekor qildingiz ❌')
     await callback.message.answer('Siz suxbatni bekor qildingiz ❌')
-    chat_user.remove(chat_user[-1])
+    user_id = chat_user[-1]
+    await callback.bot.send_message(chat_id=user_id, text='Iltimos birozdan so\'ng urinib ko\'ring 🕛')
+    chat_user.remove(user_id)
 
 @router.message(F.text, F.text!='Chatni to\'xtatish ❌', contact_admin_state.start)
 async def conversation(message:types.Message):

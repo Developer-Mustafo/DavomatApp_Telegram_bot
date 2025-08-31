@@ -5,54 +5,48 @@ from dateutil.relativedelta import relativedelta
 from config import BASE_URL
 from model import (User, ApiResponse, Person, Balance, TelegramUser, TelegramUserResponse)
 
-monthly_payment = 20_000
-
-
 def pay_to_user(user_id: int, amount: int):
-    # Avval balans ma'lumotlarini olish
+    monthly_payment = 20_000
     url_balance = f'{BASE_URL}/api/student/balance?telegramUserId={user_id}'
     response = requests.get(url_balance)
     response_json = response.json()
 
-    # ApiResponse ni pars qilish
     api_response = ApiResponse[Balance](**response_json)
 
     if api_response.data is None:
-        # Agar balans mavjud bo'lmasa, yangi limitni hisoblash
+        # Agar foydalanuvchida limit bo'lmasa
         total_months = amount / monthly_payment
-        # Hozirgi sanadan boshlab
         current_date = date.today()
         years = int(total_months // 12)
         remaining_months = total_months % 12
         months = int(remaining_months)
         days = int((remaining_months - months) * 30)
-
-        # Yangi limitni hisoblash
         new_limit = current_date + relativedelta(years=years, months=months, days=days)
     else:
-        # Mavjud limitdan davom etish
+        # Agar limit mavjud bo'lsa, davom etamiz
         old_limit = api_response.data.limit
-        if old_limit is None or old_limit<date.today():
+        if old_limit is None or old_limit < date.today():
             old_limit = date.today()
         total_months = amount / monthly_payment
         years = int(total_months // 12)
         remaining_months = total_months % 12
         months = int(remaining_months)
         days = int((remaining_months - months) * 30)
-
         new_limit = old_limit + relativedelta(years=years, months=months, days=days)
 
-    # Balance obyektini yaratish
+    # Yangi balance obyektini yaratish
     balance = Balance(limit=new_limit, telegramUserId=user_id)
 
-    # JSON ga aylantirish
-    body_json = balance.model_dump_json()  # Pydantic v2 uchun
+    # JSON ga konvertatsiya (date ni ISO formatga o'girish shart!)
+    body_json = balance.model_dump()
+    body_json["limit"] = body_json["limit"].isoformat() if body_json["limit"] else None
 
+    # PUT so'rovi yuborish
     url = f'{BASE_URL}/api/user/pay'
-    response = requests.put(url, data=body_json, headers={'Content-Type': 'application/json'})
+    response = requests.put(url, json=body_json)
 
-    print('------------------------------')
     return response
+
 
 
 def register_to_telegram(user: User):
