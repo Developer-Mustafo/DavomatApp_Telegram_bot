@@ -14,7 +14,7 @@ async def pay_balance(message:types.Message, state:FSMContext):
             await message.answer(text='Siz adminsiz')
         else:
             await state.set_state(payment_state.wait)
-            await message.answer(text='💳 Marhamat to\'lovni amalga oshiring:\n'
+            await message.answer(text='💳 Marhamat oyiga 20 000 so\'m to\'lovni amalga oshiring:\n'
                                       f'<code>{CARD_NUMBER}</code>\n'
                                       'va to\'lov qilganingizdan keyin chekning rasmini shu yerga tashlang 👇',
                                  parse_mode='HTML')
