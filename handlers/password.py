@@ -16,15 +16,15 @@ async def get_phone_number(message:types.Message, state:FSMContext):
     contact = message.contact
     phone_number = contact.phone_number
     person = get_by_phone_number(phone_number)
+    option = None
+    for admin_id in ADMIN_ID:
+        if message.from_user.id == admin_id:
+            option = admin_option
+        else:
+            option = user_option
     if person is None:
-        await message.answer('Bunday foydalanuvchi yo\'q', reply_markup=user_option)
+        await message.answer('Bunday foydalanuvchi yo\'q', reply_markup=option)
     else:
         password = person.password
-        option = None
-        for admin_id in ADMIN_ID:
-            if message.from_user.id==admin_id:
-                option = admin_option
-            else:
-                option = user_option
         await message.answer(f'Telefon raqam : <code>{phone_number}</code>\nParol: <code>{password}</code>', parse_mode='HTML', reply_markup=option)
         await state.clear()
