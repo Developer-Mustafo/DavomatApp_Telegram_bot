@@ -25,4 +25,8 @@ async def get_password(message:types.Message, state:FSMContext):
     phone_number = data.get('wait')
     person = update_password(phone_number, message.text)
     print(person)
-    await message.answer('Muvoffaqiyatli amalga oshirildi')
+    user_id = message.from_user.id
+    if user_id in ADMIN_ID:
+        await message.answer('Muvoffaqiyatli amalga oshirildi', reply_markup=admin_option)
+    else:
+        await message.answer('Muvoffaqiyatli amalga oshirildi', reply_markup=user_option)
