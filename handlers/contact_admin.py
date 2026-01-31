@@ -6,7 +6,7 @@ from aiogram import F, types, Router
 from aiogram.fsm.context import FSMContext
 from config import ADMIN_ID
 from keyboards import (stop_conversation, admin_choice_for_conversation, admin_option, user_option)
-from model import (Conversation, contact_admin_state)
+from model import (Conversation, ContactAdminState)
 
 router = Router()
 chat_user = []
@@ -20,7 +20,7 @@ async def contact_admin(message:types.Message, state:FSMContext):
     for admin_id in ADMIN_ID:
         await message.bot.send_message(chat_id=admin_id, text=f'👤 Foydalanuvchi {message.from_user.id} chatni boshladi. Qabul qilasizmi ?',
                                        reply_markup=admin_choice_for_conversation)
-    await state.set_state(contact_admin_state.start)
+    await state.set_state(ContactAdminState.start)
 
 @router.callback_query(F.data=='start')
 async def start_conversation(callback:types.CallbackQuery, state:FSMContext):
@@ -29,7 +29,7 @@ async def start_conversation(callback:types.CallbackQuery, state:FSMContext):
     for admin_id in ADMIN_ID:
         if admin_id not in chat_user:
             chat_user.append(admin_id)
-    await state.set_state(contact_admin_state.start)
+    await state.set_state(ContactAdminState.start)
 
 @router.callback_query(F.data=='cancel')
 async def cancel_conversation(callback:types.CallbackQuery):
@@ -39,7 +39,7 @@ async def cancel_conversation(callback:types.CallbackQuery):
     await callback.bot.send_message(chat_id=user_id, text='Iltimos birozdan so\'ng urinib ko\'ring 🕛')
     chat_user.remove(user_id)
 
-@router.message(F.text, F.text!='Chatni to\'xtatish ❌', contact_admin_state.start)
+@router.message(F.text, F.text !='Chatni to\'xtatish ❌', ContactAdminState.start)
 async def conversation(message:types.Message):
     sender_id = message.from_user.id
     if sender_id in chat_user:
@@ -56,7 +56,7 @@ async def conversation(message:types.Message):
             print(c)
     else:return
 
-@router.message(F.text=='Chatni to\'xtatish ❌', contact_admin_state.start)
+@router.message(F.text =='Chatni to\'xtatish ❌', ContactAdminState.start)
 async def stop(message:types.Message, state:FSMContext):
     sender_id = message.from_user.id
     if sender_id in chat_user:

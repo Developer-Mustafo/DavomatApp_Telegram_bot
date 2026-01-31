@@ -1,5 +1,5 @@
 from aiogram.fsm.state import (State, StatesGroup)
 
-class payment_state(StatesGroup):
+class PasswordState(StatesGroup):
     wait = State()
-    wait_for_validate = State()
+    password = State()

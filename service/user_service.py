@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List
+from typing import List, Any
 import requests
 from dateutil.relativedelta import relativedelta
 from config import BASE_URL
@@ -7,7 +7,7 @@ from model import (User, ApiResponse, Person, Balance, TelegramUser, TelegramUse
 
 def pay_to_user(user_id: int, amount: int):
     monthly_payment = 20_000
-    url_balance = f'{BASE_URL}/api/student/balance?telegramUserId={user_id}'
+    url_balance = f'{BASE_URL}/api/telegram/balance?telegramUserId={user_id}'
     response = requests.get(url_balance)
     response_json = response.json()
 
@@ -42,7 +42,7 @@ def pay_to_user(user_id: int, amount: int):
     body_json["limit"] = body_json["limit"].isoformat() if body_json["limit"] else None
 
     # PUT so'rovi yuborish
-    url = f'{BASE_URL}/api/user/pay'
+    url = f'{BASE_URL}/api/telegram/pay'
     response = requests.put(url, json=body_json)
 
     return response
@@ -68,26 +68,28 @@ def register_to_telegram(user: User):
     return api_response
 
 
-def get_by_phone_number(phone_number: str):
-    """
-    :param phone_number:
-    :return: password through backend
-    """
-    url = f'{BASE_URL}/api/user/phone/{phone_number}'
-    response = requests.get(url)
+def update_password(phone_number: str, password: str) -> Any | None:
+    url = f"{BASE_URL}/api/telegram/update/user?phoneNumber={phone_number}"
+    payload = password  # @RequestBody ga to'g'ridan-to'g'ri password yuboriladi
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.put(url, data=f'"{payload}"', headers=headers)  # string ni JSON sifatida yuboramiz
 
     if response.status_code != 200:
+        print("HTTP error:", response.status_code)
         return None
 
     response_json = response.json()
-    api_response = ApiResponse[Person](**response_json)
+    api_response = ApiResponse(**response_json)
     print(api_response)
 
-    person: Person = None
     if api_response.code == 200:
-        person = api_response.data
-    return person
+        return api_response.data
 
+    return None
 
 def get_user_list():
     url = f'{BASE_URL}/api/telegram/get_all_users'

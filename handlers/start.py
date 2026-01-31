@@ -1,6 +1,6 @@
 from aiogram import types, Router, F
 from aiogram.filters import CommandStart
-from model import (User, start_state)
+from model import (User, StartState)
 from aiogram.fsm.context import FSMContext
 from config import ADMIN_ID
 from keyboards import (get_number, to_my_channel, clearButton, user_option, admin_option)
@@ -14,10 +14,10 @@ async def cmd_start(message:types.Message, state:FSMContext):
     full_name = f"{first_name} {last_name}".strip()
     await message.answer(f'Assalomu aleykum {full_name} 👋', reply_markup=get_number)
     await message.answer('Xush kelibsiz !!!', reply_markup=to_my_channel)
-    await state.set_state(start_state.wait)
+    await state.set_state(StartState.wait)
 
 
-@router.message(start_state.wait, F.contact)
+@router.message(StartState.wait, F.contact)
 async def contact_handler(message:types.Message, state:FSMContext):
     contact = message.contact
     user_id = contact.user_id

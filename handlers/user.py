@@ -1,7 +1,7 @@
 from aiogram import (Router, types, F)
 from aiogram.fsm.context import (FSMContext)
 from config import (CARD_NUMBER, ADMIN_ID)
-from model import (payment_state)
+from model import (PaymentState)
 from service import pay_to_user
 from keyboards import (admin_choice, user_option)
 
@@ -13,13 +13,13 @@ async def pay_balance(message:types.Message, state:FSMContext):
         if message.from_user.id == admin_id:
             await message.answer(text='Siz adminsiz')
         else:
-            await state.set_state(payment_state.wait)
+            await state.set_state(PaymentState.wait)
             await message.answer(text='💳 Marhamat oyiga 20 000 so\'m to\'lovni amalga oshiring:\n'
                                       f'<code>{CARD_NUMBER}</code>\n'
                                       'va to\'lov qilganingizdan keyin chekning rasmini shu yerga tashlang 👇',
                                  parse_mode='HTML')
 
-@router.message(payment_state.wait, F.photo)
+@router.message(PaymentState.wait, F.photo)
 async def wait_for_image(message:types.Message):
     for admin in ADMIN_ID:
         await message.send_copy(chat_id=admin, reply_markup=admin_choice)
@@ -30,7 +30,7 @@ async def wait_for_image(message:types.Message):
 async def approved(callback:types.CallbackQuery, state:FSMContext):
     await callback.answer('Tasdiqlash bosildi ✅')
     await callback.message.answer(f'Endi userga chekdagi pulni yozing:\n<code>{users_data[-1]}</code>', parse_mode='HTML')
-    await state.set_state(payment_state.wait_for_validate)
+    await state.set_state(PaymentState.wait_for_validate)
 
 @router.callback_query(F.data=='disapproved')
 async def disapproved(callback:types.CallbackQuery, state:FSMContext):
@@ -39,7 +39,7 @@ async def disapproved(callback:types.CallbackQuery, state:FSMContext):
     await callback.bot.send_message(chat_id=users_data[-1], text='Rad etish bosildi ❌\n Admin bilan gaplashib ko\'ring 👤')
     await state.clear()
 
-@router.message(payment_state.wait_for_validate)
+@router.message(PaymentState.wait_for_validate)
 async def wait_for_validate(message:types.Message, state:FSMContext):
     await state.update_data(wait_for_validate=message.text)
     user_id = users_data.pop(-1)
