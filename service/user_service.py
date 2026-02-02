@@ -69,15 +69,8 @@ def register_to_telegram(user: User):
 
 
 def update_password(phone_number: str, password: str) -> Any | None:
-    url = f"{BASE_URL}/api/telegram/update/user?phoneNumber={phone_number}"
-    payload = password  # @RequestBody ga to'g'ridan-to'g'ri password yuboriladi
-
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-    response = requests.put(url, data=f'"{payload}"', headers=headers)  # string ni JSON sifatida yuboramiz
-
+    url = f"{BASE_URL}/api/telegram/update/user?phoneNumber={phone_number}&{password}"
+    response = requests.put(url)
     if response.status_code != 200:
         print("HTTP error:", response.status_code)
         return None
