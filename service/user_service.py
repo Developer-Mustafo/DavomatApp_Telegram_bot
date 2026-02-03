@@ -1,9 +1,10 @@
 from datetime import date
-from typing import List, Any
+from typing import List
 import requests
 from dateutil.relativedelta import relativedelta
 from config import BASE_URL
-from model import (User, ApiResponse, Person, Balance, TelegramUser, TelegramUserResponse)
+from model import (User, ApiResponse, Balance, TelegramUser, TelegramUserResponse)
+
 
 def pay_to_user(user_id: int, amount: int):
     monthly_payment = 20_000
@@ -68,9 +69,13 @@ def register_to_telegram(user: User):
     return api_response
 
 
-def update_password(phone_number: str, password: str) -> Any | None:
-    url = f"{BASE_URL}/api/telegram/update/user?phoneNumber={phone_number}&{password}"
-    response = requests.put(url)
+def update_password(phone_number: str, password: str):
+    url = f"{BASE_URL}/api/telegram/update/user"
+    params = {
+        "phoneNumber": phone_number,
+        "password": password
+    }
+    response = requests.put(url, params=params)
     if response.status_code != 200:
         print("HTTP error:", response.status_code)
         return None
